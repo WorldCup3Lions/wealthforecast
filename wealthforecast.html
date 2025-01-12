@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WealthForecast</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            background-color: #121212;
+            color: #ffffff;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        button {
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #1e1e1e;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        table, th, td {
+            border: 1px solid #333;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #333;
+        }
+        #results-table {
+            display: none;
+        }
+        #results-title {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>WealthForecast</h1>
+        <h2>Investment Calculator</h2>
+    </header>
+
+    <form id="calculator-form">
+        <label for="starting-amount">Starting Amount:</label>
+        <input type="number" id="starting-amount" placeholder="Enter your starting amount" required>
+
+        <label for="average-return">Average Yearly Return (%):</label>
+        <input type="number" id="average-return" step="0.01" placeholder="Enter the yearly return rate" required>
+
+        <label for="contribution-type">Contribution Type:</label>
+        <select id="contribution-type" required>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+            <option value="one-time">One-Time</option>
+        </select>
+
+        <label for="contribution-amount">Contribution Amount:</label>
+        <input type="number" id="contribution-amount" placeholder="Enter contribution amount" required>
+
+        <label for="years">Number of Years (1-99):</label>
+        <input type="number" id="years" min="1" max="99" placeholder="Enter the number of years" required>
+
+        <button type="button" onclick="calculateForecast()">Calculate</button>
+    </form>
+
+    <h3 id="results-title">Results</h3>
+    <table id="results-table">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Total Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Results will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        function calculateForecast() {
+            const startingAmount = parseFloat(document.getElementById('starting-amount').value);
+            const returnRate = parseFloat(document.getElementById('average-return').value) / 100;
+            const contributionType = document.getElementById('contribution-type').value;
+            const contributionAmount = parseFloat(document.getElementById('contribution-amount').value);
+            const years = parseInt(document.getElementById('years').value);
+
+            if (isNaN(startingAmount) || isNaN(returnRate) || isNaN(contributionAmount) || isNaN(years)) {
+                alert('Please fill out all fields with valid values.');
+                return;
+            }
+
+            const resultsTitle = document.getElementById('results-title');
+            const resultsTable = document.getElementById('results-table');
+            const resultsBody = resultsTable.querySelector('tbody');
+            resultsBody.innerHTML = '';
+
+            let totalValue = startingAmount;
+
+            for (let year = 1; year <= years; year++) {
+                totalValue *= (1 + returnRate);
+
+                if (contributionType === 'monthly') {
+                    totalValue += contributionAmount * 12;
+                } else if (contributionType === 'yearly') {
+                    totalValue += contributionAmount;
+                } else if (contributionType === 'one-time' && year === 1) {
+                    totalValue += contributionAmount;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${year}</td><td>${totalValue.toFixed(2)}</td>`;
+                resultsBody.appendChild(row);
+            }
+
+            resultsTitle.style.display = 'block';
+            resultsTable.style.display = 'table';
+        }
+    </script>
+</body>
+</html>
